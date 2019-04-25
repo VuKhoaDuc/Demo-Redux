@@ -1,32 +1,5 @@
-import { combineEpics, ofType } from "redux-observable";
-import { switchMap } from "rxjs/operators";
-import { getDataUser } from "../services/user-service";
+import { combineEpics } from "redux-observable";
+import _ from "lodash";
+import { userEpics } from "./modules/usersDuck";
 
-import {
-  getDataBackend,
-  getDataBackendSuccess,
-  getDataBackendFailure
-} from "./modules/usersDuck";
-
-const getDataEpic = (action$, store) =>
-  action$.pipe(
-    ofType("GET_DATA_BACKEND"),
-    switchMap(
-      action =>
-        new Promise(resolve => {
-          const dataGetDataUser = getDataUser(action.nickname);
-          dataGetDataUser
-            .then(data => {
-              const dataPromise = data.additionalData.userData;
-              resolve(getDataBackendSuccess(dataPromise));
-            })
-            .catch(err => {
-              resolve(getDataBackendFailure(err));
-            });
-          console.log("mylog data: ", dataGetDataUser);
-          window.dataGetDataUser = dataGetDataUser;
-        })
-    )
-  );
-
-export default combineEpics(getDataEpic);
+export default combineEpics(..._.values(userEpics));
